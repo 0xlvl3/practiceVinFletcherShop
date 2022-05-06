@@ -1,60 +1,52 @@
 ﻿Console.Title = "Vin Fletchers Shop";
 
+//method title
 Title();
 
-Console.WriteLine("Hello welcome to my shop, I'm Vin");
+//small intro
+Console.WriteLine("\nHello welcome to my shop, I'm Vin");
 Console.Write("What is your name? ");
 string user = Console.ReadLine();
 Console.WriteLine($"\nWelcome {user} have a look at my options for an arrow and I can make it - for the right price ");
 
-Arrow arrow = new Arrow(ArrowHeadType.Steel, FletchingType.Plastic, 60);
+//creating a new instance of arrow and giving it the value of the users new arrow
+Arrow arrow = GetArrow();
+Console.WriteLine($"That arrow will cost {arrow.GetCost()} gold");
 
-ArrowHeadType arrowHead = GetArrowHead();
-Console.WriteLine($"\n{arrowHead}");
-
-FletchingType fletchingType = GetFletchingType();
-Console.WriteLine($"\n{fletchingType}");
-
-float length = GetLength();
-Console.WriteLine($"{user} you have picked {length} that will be {LengthCost()} gold");
-
-Console.WriteLine($"\n{user} you have chosen, {arrowHead} arrow head with a {fletchingType} fletch with a length of {length}");
-Console.Write($"That will come to {totalCost()}");
-
-
-float totalCost()
+//Method to construct the users input arrow
+Arrow GetArrow()
 {
-    float cost = 0;
-    if(arrowHead == ArrowHeadType.Steel) { cost += 10; }
-    else if (arrowHead == ArrowHeadType.Wood) { cost += 3; }
-    else { cost += 5; }
+    ArrowHeadType arrowHeadType = GetArrowHead();
+    FletchingType fletchingType = GetFletchingType();
+    float length = GetLength();
 
-    if (fletchingType == FletchingType.Plastic) { cost += 10; }
-    else if (fletchingType == FletchingType.Plastic) { cost += 3; } else { cost += 5; }
-
-    cost += length;
-
-    return cost;
+    Console.WriteLine($"\n{user} you picked an arrowhead {arrowHeadType} with a fletch of {fletchingType} & a length of {length}cm");
+    return new Arrow(arrowHeadType, fletchingType, length);
 }
 
-Console.WriteLine("stop");
-Console.ReadKey();
+
+
 //method to get userlength return
 float GetLength()
 {
-    float userLength = 0;
+    float length = 0;
     Console.WriteLine($"{user} please enter a length between 60 - 100");
-    while (userLength < 60 || userLength > 100)
+    //will loop until 60 - 100 is entered
+    while (length < 60 || length > 100)
     {
-        userLength = Convert.ToSingle(Console.ReadLine());
-        Console.WriteLine($"{user} that is too big ");
+        length = Convert.ToSingle(Console.ReadLine());
+        //will tell user too high
+        if (length > 100) { Console.WriteLine($"{user} That value is high try between 60 - 100 "); }
+        if (length < 60) { Console.WriteLine($"{user} That value is too low try between 60 - 100"); }
     }
-    return userLength;
+    Console.WriteLine($"\n{user} you've pick {length}cm");
+    return length;
 }
 
+//method to get the fletching type from user
 FletchingType GetFletchingType()
 {
-    while(true)
+    while (true)
     {
         Console.WriteLine("\n 1 - Plastic \n 2 - Turkey Feathers \n 3 - Goose Feathers");
         int option = Convert.ToInt32(Console.ReadLine());
@@ -73,13 +65,13 @@ FletchingType GetFletchingType()
 }
 
 
+//method to get the arrowhead from user
 ArrowHeadType GetArrowHead()
 {
     while (true)
     {
-        Console.WriteLine("\n 1 - Steel \n 2 - Wood \n 3 - Obsidian");
+        Console.WriteLine("\n 1 - Steel \n 2 - Wood \n 3 - Obsidian\n");
         int option = Convert.ToInt32(Console.ReadLine());
-
         if (option >= 1 && option <= 3)
         {
             return option switch
@@ -102,12 +94,6 @@ void Title()
     Console.WriteLine("\"\"\"\"                   \"\"\"\"");
 }
 
-float LengthCost()
-{
-    float cost = 0;
-    cost = 0.05f * length;
-    return cost;
-}
 
 //Arrow class
 class Arrow
@@ -119,7 +105,7 @@ class Arrow
 
     public static ArrowHeadType _arrowHeadType;
     public static FletchingType _fletchingType;
-    static float _length;
+    public float _length;
 
 
     //constructor we will use to access the private variables
@@ -132,10 +118,30 @@ class Arrow
 
     }
 
-    //getter methods
-    public ArrowHeadType ArrowHeadType { get; set; }
-    public FletchingType FletchingType { get; set; }
-    public float Length { get; set; }
+    //Method to get total cost of all parts combined
+    public float GetCost()
+    {
+        float arrowHeadCost = _arrowHeadType switch
+        {
+            ArrowHeadType.Steel => 10,
+            ArrowHeadType.Wood => 3,
+            ArrowHeadType.Obsidian => 5,
+            _ => throw new NotImplementedException()
+        };
+
+        float fletchingCost = _fletchingType switch
+        {
+            FletchingType.Plastic => 10,
+            FletchingType.TurkeyFeather => 3,
+            FletchingType.GooseFeather => 5,
+            _ => throw new NotImplementedException()
+        };
+
+        float lengthCost = 0.05f * _length;
+
+
+        return arrowHeadCost + fletchingCost + lengthCost;
+    }
 
     //parameterless constructor
     public Arrow() { }
